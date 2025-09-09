@@ -1451,7 +1451,7 @@
   },
   "files": {
     "app.R": {
-      "checksum": "de93c70452735c6238534d83f7728c2c"
+      "checksum": "f8edf1ddb8e81b3d7d0c3d7b4ce55702"
     },
     "E.csv": {
       "checksum": "b1dd00a49a48b6c3e7139426632ed666"
@@ -1473,6 +1473,9 @@
     },
     "F3F4.csv": {
       "checksum": "c67839d4d0112412bf112b8292c678b1"
+    },
+    "Test.Rmd": {
+      "checksum": "30c46ab2134e17c418cc3777ec0cf61c"
     }
   },
   "users": null

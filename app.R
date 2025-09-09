@@ -188,18 +188,38 @@ server <-function(input, output, session){
 }, rownames=FALSE)
 
 #Output E3: Total periodical (Unique Titles)
-  output$per <-renderDataTable({
-    fb <-filtered_e3()
-    req(nrow(fb)>0)
-    fb_filtered <-fb[fb$Circulation.Modifier %in% INC_PER,]
-    data<-aggregate(Count.of.Items ~ Owning.Library + Circulating.Library, data=fb_filtered, FUN=sum)
-    grand_total <-data.frame(
-      Owning.Library="Grand Total",
-      Circulating.Library="",
-      Count.of.Items=sum(data$Count.of.Items, na.rm=TRUE)
+  get_periodicals <- function() {
+    fb <- filtered_e3()
+    req(nrow(fb) > 0)
+    fb_filtered <- fb[fb$Circulating.Library %in% input$libs, c("Circulating.Library", "Title.Proper..normalized.")]
+    
+   if (nrow(fb_filtered) == 0) {
+      return(data.frame(
+        Circulating.Library = character(0),
+        Unique.Titles = numeric(0)
+      ))
+    }
+    
+    data <- aggregate(Title.Proper..normalized. ~ Circulating.Library,
+                      data = fb_filtered,
+                      FUN = function(x) length(unique(x)))
+    
+    # rename column for clarity
+    names(data)[2] <- "Unique.Titles"
+    
+    grand_total <- data.frame(
+      Circulating.Library = "Grand Total",
+      Unique.Titles = sum(data$Unique.Titles, na.rm = TRUE)
     )
-    rbind(data,grand_total)
-  }, rownames=FALSE)
+    
+    rbind(data, grand_total)
+  }
+  
+  output$per <- renderDataTable({
+    get_periodicals()
+  }, rownames = FALSE)
+  
+  makeDownloadHandler("download_per", "periodicals", get_periodicals)
 
 #Output E4: Total audio (including circ. modifiers Audiobook, High Demand Audiobook, Music)
   output$audio <-renderDataTable({
